@@ -1,118 +1,134 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Steve Jobs Tribute</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/x-icon" href="steve-glasses-favicon.ico" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>stevejobs.ch — Coming Soon</title>
+  <meta name="description" content="stevejobs.ch — Coming soon." />
+  <meta name="theme-color" content="#000000" />
+
+  <style>
+    :root {
+      --bg: #000;
+      --fg: #f5f5f5;
+      --muted: rgba(245,245,245,.7);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      display: grid;
+      place-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      overflow: hidden;
+    }
+
+    .wrap {
+      text-align: center;
+      padding: 24px;
+    }
+
+    .line {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0;
+      font-size: clamp(28px, 6vw, 72px);
+      letter-spacing: 0.02em;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+
+    /* The caret */
+    .caret {
+      display: inline-block;
+      width: 0.6ch;
+      margin-left: 0.15ch;
+      border-left: 2px solid var(--fg);
+      height: 1em;
+      transform: translateY(0.12em);
+      animation: blink 900ms steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .sub {
+      margin-top: 14px;
+      font-size: clamp(14px, 2.2vw, 18px);
+      color: var(--muted);
+      letter-spacing: 0.22em;
+      text-transform: lowercase;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 600ms ease, transform 600ms ease;
+    }
+
+    .sub.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Optional subtle vignette */
+    .vignette {
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      background: radial-gradient(closest-side, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.75) 100%);
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .caret { animation: none; }
+      .sub { transition: none; }
+    }
+  </style>
 </head>
+
 <body>
-
-  <div class="container">
-    <div class="text-box">
-      <h1>Steve Jobs</h1>
-      <p>1955 - 2011</p>
+  <div class="wrap" aria-label="Coming soon">
+    <div class="line" role="heading" aria-level="1">
+      <span id="typed" aria-label="stevejobs.ch"></span><span class="caret" aria-hidden="true"></span>
     </div>
-    <img src="steve.png" alt="Steve Jobs" class="steve-img" />
+    <div id="sub" class="sub">coming soon</div>
   </div>
 
-  <div class="scroll-down">
-    <span>&#x2193;</span>
-  </div>
+  <div class="vignette" aria-hidden="true"></div>
 
-  <section id="timeline">
-    <div class="timeline-line"></div>
+  <script>
+    (function () {
+      const text = "stevejobs.ch";
+      const typedEl = document.getElementById("typed");
+      const subEl = document.getElementById("sub");
 
-    <div class="event first">
-      <div class="event-dot"></div>
-      <h2>1955</h2>
-      <p>Steve Jobs is born in San Francisco, California.</p>
-      <img src="images/1955.jpg" alt="Steve Jobs Born" />
-    </div>
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>1976</h2>
-      <p>Co-founds Apple with Steve Wozniak and Ronald Wayne.</p>
-      <img src="images/1976.jpg" alt="Apple Founding" />
-    </div>
+      if (prefersReduced) {
+        typedEl.textContent = text;
+        subEl.classList.add("show");
+        return;
+      }
 
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>1984</h2>
-      <p>Steve Jobs unveils the Macintosh.</p>
-      <img src="images/1984.jpg" alt="Macintosh" />
-    </div>
+      let i = 0;
+      const speed = 120;     // ms per character
+      const startDelay = 400;
 
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>1985</h2>
-      <p>Founds NeXT and helps create Pixar.</p>
-      <img src="images/1985.jpg" alt="NeXT and Pixar" />
-    </div>
+      function type() {
+        if (i < text.length) {
+          typedEl.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          setTimeout(() => subEl.classList.add("show"), 250);
+        }
+      }
 
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>1998</h2>
-      <p>Introduces the first iMac, revolutionizing personal computing.</p>
-      <img src="images/1998.jpg" alt="First iMac" />
-    </div>
-
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>2001</h2>
-      <p>Releases the first iPod: 1000 songs in your pocket.</p>
-      <img src="images/2001.jpg" alt="First iPod" />
-    </div>
-
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>2007</h2>
-      <p>Launches the first iPhone and changes mobile forever.</p>
-      <img src="images/2007.jpg" alt="First iPhone" />
-    </div>
-
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>2010</h2>
-      <p>Unveils the iPad, redefining tablets.</p>
-      <img src="images/2010.jpg" alt="First iPad" />
-    </div>
-
-    <div class="event">
-      <div class="event-dot"></div>
-      <h2>2011</h2>
-      <p>Steve Jobs passes away. A visionary is remembered.</p>
-      <img src="images/2011.jpg" alt="Steve Jobs Memorial" />
-    </div>
-  </section>
-
-  <section id="apple-showcase">
-  <h2>Iconic Steve Jobs Devices</h2>
-  <div class="device-icons">
-    <button data-device="ipod">🎧 iPod</button>
-    <button data-device="imac">🖥️ iMac</button>
-    <button data-device="iphone">📱 iPhone</button>
-    <button data-device="ipad">📲 iPad</button>
-  </div>
-  <div class="device-info" id="device-info"></div>
-</section>
-
-<section class="thank-you-section">
-  <p>Thank you for reaching the bottom of this page.<br>Click below to <strong>Think different</strong>.</p>
-  <a href="think-different.html" class="think-button">Think different</a>
-</section>
-
-<!-- AXYOM AI Widget -->
-<div id="axyom-chat"></div>
-<script
-  src="https://backend-still-river-1228.fly.dev/widget/axyom.js"
-  data-site="cfmoto-schweiz.ch"
-  data-key="axyom_live_231ac27d8416e8ba67a3b94326f0c6df">
-</script>
-
-<script src="script.js"></script>
+      setTimeout(type, startDelay);
+    })();
+  </script>
 </body>
 </html>
-
