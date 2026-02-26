@@ -3,132 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>stevejobs.ch — Coming Soon</title>
-  <meta name="description" content="stevejobs.ch — Coming soon." />
-  <meta name="theme-color" content="#000000" />
-
-  <style>
-    :root {
-      --bg: #000;
-      --fg: #f5f5f5;
-      --muted: rgba(245,245,245,.7);
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-      display: grid;
-      place-items: center;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      overflow: hidden;
-    }
-
-    .wrap {
-      text-align: center;
-      padding: 24px;
-    }
-
-    .line {
-      display: inline-flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 0;
-      font-size: clamp(28px, 6vw, 72px);
-      letter-spacing: 0.02em;
-      line-height: 1.05;
-      white-space: nowrap;
-    }
-
-    /* The caret */
-    .caret {
-      display: inline-block;
-      width: 0.6ch;
-      margin-left: 0.15ch;
-      border-left: 2px solid var(--fg);
-      height: 1em;
-      transform: translateY(0.12em);
-      animation: blink 900ms steps(1) infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    .sub {
-      margin-top: 14px;
-      font-size: clamp(14px, 2.2vw, 18px);
-      color: var(--muted);
-      letter-spacing: 0.22em;
-      text-transform: lowercase;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 600ms ease, transform 600ms ease;
-    }
-
-    .sub.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Optional subtle vignette */
-    .vignette {
-      position: fixed;
-      inset: -20%;
-      pointer-events: none;
-      background: radial-gradient(closest-side, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.75) 100%);
-    }
-
-    /* Respect reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      .caret { animation: none; }
-      .sub { transition: none; }
-    }
-  </style>
+  <title>Steve Jobs — Tribute</title>
+  <meta name="description" content="An independent, non-commercial tribute experience." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Elegant serif + clean sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <div class="wrap" aria-label="Coming soon">
-    <div class="line" role="heading" aria-level="1">
-      <span id="typed" aria-label="stevejobs.ch"></span><span class="caret" aria-hidden="true"></span>
-    </div>
-    <div id="sub" class="sub">coming soon</div>
-  </div>
+  <!-- subtle cursor dot -->
+  <div class="cursor-dot" aria-hidden="true"></div>
 
-  <div class="vignette" aria-hidden="true"></div>
+  <main class="gallery" id="top">
 
-  <script>
-    (function () {
-      const text = "stevejobs.ch";
-      const typedEl = document.getElementById("typed");
-      const subEl = document.getElementById("sub");
+    <!-- ROOM 1 -->
+    <section class="room room--title" data-animate>
+      <div class="frame">
+        <h1 class="title">Steve Jobs</h1>
+        <div class="sub">1955 — 2011</div>
 
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        <div class="hint">
+          <span class="hint__line"></span>
+          <span class="hint__text">Scroll</span>
+        </div>
+      </div>
+    </section>
 
-      if (prefersReduced) {
-        typedEl.textContent = text;
-        subEl.classList.add("show");
-        return;
-      }
+    <!-- ROOM 2 -->
+    <section class="room room--quote" data-animate>
+      <div class="frame">
+        <blockquote class="quote">
+          “Design is not just what it looks like and feels like.
+          Design is how it works.”
+        </blockquote>
+        <div class="caption">A room for craft.</div>
+      </div>
+    </section>
 
-      let i = 0;
-      const speed = 120;     // ms per character
-      const startDelay = 400;
+    <!-- ROOM 3 -->
+    <section class="room room--quote" data-animate>
+      <div class="frame">
+        <blockquote class="quote">
+          “People don’t know what they want until you show it to them.”
+        </blockquote>
+        <div class="caption">A room for conviction.</div>
+      </div>
+    </section>
 
-      function type() {
-        if (i < text.length) {
-          typedEl.textContent += text.charAt(i);
-          i++;
-          setTimeout(type, speed);
-        } else {
-          setTimeout(() => subEl.classList.add("show"), 250);
-        }
-      }
+    <!-- ROOM 4: DOTS -->
+    <section class="room room--dots" data-animate>
+      <canvas id="dots" aria-hidden="true"></canvas>
+      <div class="frame frame--overlay">
+        <blockquote class="quote quote--center">
+          “You can’t connect the dots looking forward;
+          you can only connect them looking backward.”
+        </blockquote>
+        <div class="caption">A room for perspective.</div>
+      </div>
+    </section>
 
-      setTimeout(type, startDelay);
-    })();
-  </script>
+    <!-- ROOM 5: STANFORD -->
+    <section class="room room--video" data-animate>
+      <div class="frame">
+        <h2 class="roomTitle">Stanford Address</h2>
+        <div class="meta">June 12, 2005</div>
+
+        <div class="video">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/UF8uR6Z6KLc"
+            title="Steve Jobs Stanford Commencement Address (2005)"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="caption">A room for story.</div>
+      </div>
+    </section>
+
+    <!-- ROOM 6: LESSONS -->
+    <section class="room room--lessons" data-animate>
+      <div class="frame">
+        <h2 class="roomTitle">Lessons for Builders</h2>
+        <div class="grid">
+          <div class="card">
+            <div class="card__title">Focus</div>
+            <div class="card__text">Subtract until only the essential remains.</div>
+          </div>
+          <div class="card">
+            <div class="card__title">Taste</div>
+            <div class="card__text">Care deeply about details nobody will praise.</div>
+          </div>
+          <div class="card">
+            <div class="card__title">Courage</div>
+            <div class="card__text">Choose the hard truth over the easy noise.</div>
+          </div>
+          <div class="card">
+            <div class="card__title">Simplicity</div>
+            <div class="card__text">The most refined thing is the thing not added.</div>
+          </div>
+        </div>
+        <div class="caption">A room for intent.</div>
+      </div>
+    </section>
+
+    <!-- ROOM 7: YOUR REFLECTION -->
+    <section class="room room--reflection" data-animate>
+      <div class="frame">
+        <h2 class="roomTitle">What He Awakened</h2>
+        <p class="reflection">
+          He didn’t just build objects. He built belief — in taste, in courage,
+          in the quiet power of saying <em>no</em>.
+          <br><br>
+          This is my way of saying thank you. Thank you Steve.
+        </p>
+        <div class="sign">
+          <span class="sign__name">Dario Tino</span>
+          <span class="sign__year">2026</span>
+        </div>
+
+        <footer class="footer">
+          <div class="footer__line"></div>
+          <div class="footer__text">
+            This is an independent, non-commercial tribute website.
+            Not affiliated with Apple Inc. or the estate of Steve Jobs.
+          </div>
+        </footer>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,64 +1,160 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const events = document.querySelectorAll(".event");
-  const timelineLine = document.querySelector(".timeline-line");
+/* Cinematic entrance per room */
+(() => {
+  const rooms = document.querySelectorAll("[data-animate]");
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) e.target.classList.add("is-visible");
+    }
+  }, { threshold: 0.35 });
 
-  let maxOffset = 0;
+  rooms.forEach(r => io.observe(r));
+})();
 
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
+/* Cursor dot (desktop only-ish) */
+(() => {
+  const dot = document.querySelector(".cursor-dot");
+  if (!dot) return;
 
-        const eventBottom = entry.target.offsetTop + entry.target.offsetHeight / 2;
-        if (eventBottom > maxOffset) {
-          maxOffset = eventBottom;
-          timelineLine.style.height = `${maxOffset}px`;
-        }
+  let x = window.innerWidth / 2;
+  let y = window.innerHeight / 2;
+  let tx = x, ty = y;
 
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.2
-  });
-
-  events.forEach(event => observer.observe(event));
-});
-
-const devices = {
-  ipod: {
-    title: "iPod (2001)",
-    img: "images/ipod.jpg",
-    fact: "The iPod redefined music: 1,000 songs in your pocket."
-  },
-  imac: {
-    title: "iMac G3 (1998)",
-    img: "images/imac.jpg",
-    fact: "With bold colors and curves, it changed computer design forever."
-  },
-  iphone: {
-    title: "iPhone (2007)",
-    img: "images/iphone.jpg",
-    fact: "Apple’s most revolutionary product, merging phone, iPod, and internet."
-  },
-  ipad: {
-    title: "iPad (2010)",
-    img: "images/ipad.jpg",
-    fact: "A magical glass slab — powerful, simple, and fun to use."
+  const isTouch = matchMedia("(pointer: coarse)").matches;
+  if (isTouch) {
+    dot.style.display = "none";
+    return;
   }
-};
 
-document.querySelectorAll(".device-icons button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const key = btn.dataset.device;
-    const device = devices[key];
-    const info = document.getElementById("device-info");
+  window.addEventListener("mousemove", (e) => {
+    tx = e.clientX;
+    ty = e.clientY;
+  }, { passive: true });
 
-    info.innerHTML = `
-      <img src="${device.img}" alt="${device.title}">
-      <h3>${device.title}</h3>
-      <p>${device.fact}</p>
-    `;
-    info.style.display = "block";
+  function raf() {
+    // smooth follow
+    x += (tx - x) * 0.18;
+    y += (ty - y) * 0.18;
+    dot.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+    requestAnimationFrame(raf);
+  }
+  raf();
+})();
+
+/* Minimal “connecting dots” canvas (subtle, museum-like) */
+(() => {
+  const canvas = document.getElementById("dots");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  let w = 0, h = 0, dpr = 1;
+  const dots = [];
+  const DOT_COUNT = 70;
+  const MAX_LINK_DIST = 160;
+
+  let mouse = { x: -9999, y: -9999 };
+
+  function resize() {
+    dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // reset dots
+    dots.length = 0;
+    for (let i = 0; i < DOT_COUNT; i++) {
+      dots.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.6 + 0.6
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // background stays black; we only draw lines/dots subtly
+    // move dots
+    for (const p of dots) {
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < -20) p.x = w + 20;
+      if (p.x > w + 20) p.x = -20;
+      if (p.y < -20) p.y = h + 20;
+      if (p.y > h + 20) p.y = -20;
+    }
+
+    // links
+    for (let i = 0; i < dots.length; i++) {
+      for (let j = i + 1; j < dots.length; j++) {
+        const a = dots[i], b = dots[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < MAX_LINK_DIST) {
+          const alpha = (1 - dist / MAX_LINK_DIST) * 0.18; // subtle
+          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // mouse magnet (very gentle)
+    for (const p of dots) {
+      const dx = mouse.x - p.x;
+      const dy = mouse.y - p.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 140) {
+        p.vx += dx * 0.000015;
+        p.vy += dy * 0.000015;
+      }
+      // slight damping to keep it calm
+      p.vx *= 0.995;
+      p.vy *= 0.995;
+
+      // dot
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // mouse tracking only when in that section
+  const dotsRoom = canvas.closest(".room--dots");
+  let inView = false;
+
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) inView = e.isIntersecting;
+    if (!inView) mouse = { x: -9999, y: -9999 };
+  }, { threshold: 0.25 });
+
+  if (dotsRoom) io.observe(dotsRoom);
+
+  window.addEventListener("mousemove", (e) => {
+    if (!inView) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  }, { passive: true });
+
+  window.addEventListener("mouseleave", () => {
+    mouse = { x: -9999, y: -9999 };
   });
-});
+
+  window.addEventListener("resize", resize);
+  resize();
+  draw();
+})();
