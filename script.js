@@ -158,3 +158,50 @@
   resize();
   draw();
 })();
+
+
+//////////// BLACKHOLE ///////////////
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const section = document.querySelector(".room--blackhole");
+  const tunnel = document.querySelector(".blackhole");
+  const items = document.querySelectorAll(".bh-item");
+
+  if (!section || !tunnel || items.length === 0) return;
+
+  const radius = 120;
+  const spacing = 180;
+
+  // Position items in simple horizontal layout (for now)
+  items.forEach((item, i) => {
+    item.style.transform = `
+      translate(-50%, -50%)
+      translateX(${i * 60}px)
+    `;
+  });
+
+  function update() {
+
+    const rect = section.getBoundingClientRect();
+
+    const progress = Math.min(
+      Math.max(-rect.top / (section.offsetHeight - window.innerHeight), 0),
+      1
+    );
+
+    const travel = progress * spacing * (items.length - 1);
+
+    tunnel.style.transform = `translateZ(${travel}px)`;
+
+    items.forEach((item, i) => {
+      const depth = Math.abs(i * spacing - travel);
+      item.style.opacity = 1 - Math.min(depth / 900, 1);
+    });
+  }
+
+  window.addEventListener("scroll", update);
+  window.addEventListener("resize", update);
+
+  update();
+});

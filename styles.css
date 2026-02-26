@@ -14,15 +14,15 @@ body{
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  overflow: hidden; /* gallery handles scroll */
+  overflow-x: hidden; /* gallery handles scroll */
   cursor: default;
 }
 
 /* Full-screen “museum rooms” */
 .gallery{
-  height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
+  height: auto;
+  overflow: visible;
+  scroll-snap-type: y proximity;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -262,4 +262,36 @@ body{
   .grid{ grid-template-columns: 1fr; }
   .quote{ max-width: 26ch; }
   body{ cursor: default; } /* iOS ignores custom cursor anyway */
+}
+
+/* ============================= */
+/* BLACK HOLE RESET */
+/* ============================= */
+
+
+.room--blackhole {
+  min-height: 100vh;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blackhole-wrapper,
+.blackhole {
+  position: static;
+  transform: none !important;
+  perspective: none !important;
+}
+
+.bh-item {
+  position: static;
+  transform: none !important;
+  opacity: 1 !important;
+  margin: 20px;
+}
+
+.bh-item img {
+  width: 300px;
+  display: block;
 }
